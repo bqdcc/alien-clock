@@ -1,25 +1,33 @@
 # Alien-Clock
 
-This template should help get you started developing with Vue 3 in Vite.
+Alien time compare Earth time:
 
-## Recommended IDE Setup
+1.Below is the time comparison between Earth time and Alien time:
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+- 1970/1/1 00:00:00 Earth time is equivalent to 2804/18/31 02:02:88 Alien’s time.
+- 1 second Alien time is 0.5 second Earth time.
 
-## Type Support for `.vue` Imports in TS
+2.Below is the information about Alien’s time:
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+- 1 minute is 90 seconds.
+- 1 hour is 90 minutes.
+- 1 day is 36 hours.
+- There are 18 months in a year.
+- Number of days in respective month is as shown below:
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+| Month | 1   | 2   | 3   | 4   | 5   | 6   | 7   | 8   | 9   | 10  | 11  | 12  | 13  | 14  | 15  | 16  | 17  | 18  |
+| ----- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Days  | 44  | 42  | 48  | 40  | 48  | 44  | 40  | 44  | 42  | 40  | 40  | 42  | 44  | 48  | 42  | 40  | 44  | 38  |
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+Write a standalone program that has the following functions:
 
-## Customize configuration
+- Display the Alien clock (be creative) showing current date and time The clock should be updated every 1 Alien second.
+- Allow user to set date and time. Validate the input. 
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+Bonus:
+
+- Display Earth’s date and time based on the Alien’s time.
+- Allow user to set alarm.
 
 ## Project Setup
 
