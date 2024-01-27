@@ -1,13 +1,13 @@
-# Alien-Clock
+# A-Clock
 
-Alien time compare Earth time:
+A time compare Earth time:
 
-1.Below is the time comparison between Earth time and Alien time:
+1.Below is the time comparison between Earth time and A time:
 
-- 1970/1/1 00:00:00 Earth time is equivalent to 2804/18/31 02:02:88 Alien’s time.
-- 1 second Alien time is 0.5 second Earth time.
+- 1970/1/1 00:00:00 Earth time is equivalent to 2804/18/31 02:02:88 A’s time.
+- 1 second A time is 0.5 second Earth time.
 
-2.Below is the information about Alien’s time:
+  2.Below is the information about A’s time:
 
 - 1 minute is 90 seconds.
 - 1 hour is 90 minutes.
@@ -21,13 +21,18 @@ Alien time compare Earth time:
 
 Write a standalone program that has the following functions:
 
-- Display the Alien clock (be creative) showing current date and time The clock should be updated every 1 Alien second.
-- Allow user to set date and time. Validate the input. 
+- Display the A clock (be creative) showing current date and time The clock should be updated every 1 A second.
+- Allow user to set date and time. Validate the input.
 
 Bonus:
 
-- Display Earth’s date and time based on the Alien’s time.
+- Display Earth’s date and time based on the A’s time.
 - Allow user to set alarm.
+
+detail:
+  setInterval() which works in unfocused windows.
+  The clock should be updated every 1 A second.
+  
 
 ## Project Setup
 

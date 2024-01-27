@@ -1,10 +1,19 @@
 <script setup lang="ts">
-import { earthTimeToAlienTime, alienTimeToEarthTime, formatAlienDate } from './utils/time';
+import {
+  earthTimeToAlienTime,
+  alienTimeToEarthTime,
+  formatAlienDate,
+  getAlienTimeBySecondNum,
+  getAlienSecondNumByTime,
+  type AlienTime,
+} from './utils/time';
 import { formatEarthDate } from './utils';
-import { ref, watch } from 'vue';
-import SimpleClock from './component/SimpleClock.vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+import SimpleClock from './components/SimpleClock.vue';
 import AlarmIcon from './assets/AlarmIcon.vue';
 import SettingIcon from './assets/SettingIcon.vue';
+import SettingDialog from './components/SettingDialog.vue';
+import { clearInterval, setInterval } from 'worker-timers';
 
 const hoursPointerRotate = ref();
 const minutesPointerRotate = ref();
@@ -23,14 +32,45 @@ const clock = (hours: number, minutes: number) => {
 
 const alienTime = ref(earthTimeToAlienTime());
 const earthTime = ref(alienTimeToEarthTime(alienTime.value));
-setInterval(() => {
-  alienTime.value = earthTimeToAlienTime();
-}, 500);
+let isNow = true;
+let timer: any = null;
+function timerFunc() {
+  timer = setInterval(() => {
+    if (isNow) {
+      alienTime.value = earthTimeToAlienTime();
+    } else {
+      alienTime.value = getAlienTimeBySecondNum(getAlienSecondNumByTime(alienTime.value) + 1);
+    }
+  }, 500);
+}
+
+onMounted(() => {
+  timerFunc();
+});
+
+onUnmounted(() => {
+  clearInterval(timer);
+  timer = null;
+});
 
 watch(alienTime, (newVal) => {
   earthTime.value = alienTimeToEarthTime(newVal);
   clock(newVal.hours, newVal.minutes);
 });
+
+const settingDialogShow = ref(false);
+function openSettingDialogShow() {
+  settingDialogShow.value = true;
+}
+
+function setAlienTime(newIsNow: boolean, newTime?: AlienTime) {
+  clearInterval(timer);
+  if (!newIsNow) {
+    alienTime.value = newTime!;
+  }
+  isNow = newIsNow;
+  timerFunc();
+}
 </script>
 
 <template>
@@ -42,8 +82,10 @@ watch(alienTime, (newVal) => {
             class="h-10 w-10 rounded-full transition-shadow hover:shadow-md hover:shadow-redC"
           />
         </button>
-        <button>
-          <SettingIcon class="h-10 w-10 rounded-full transition-shadow hover:shadow-md hover:shadow-redC" />
+        <button @click="openSettingDialogShow">
+          <SettingIcon
+            class="h-10 w-10 rounded-full transition-shadow hover:shadow-md hover:shadow-redC"
+          />
         </button>
       </div>
       <div
@@ -66,5 +108,7 @@ watch(alienTime, (newVal) => {
     <div class="rounded-se-md rounded-ss-md bg-slate-500 p-1">
       Earth Time: {{ formatEarthDate(earthTime) }}
     </div>
+
+    <SettingDialog v-model:show="settingDialogShow" :setAlienTime="setAlienTime" />
   </main>
 </template>

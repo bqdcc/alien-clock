@@ -30,7 +30,7 @@ const alienBaseTotalSeconds =
   alienBaseMinuteTotalSeconds +
   alienEpochSecond;
 
-type AlienTime = {
+export type AlienTime = {
   year: number;
   month: number;
   day: number;
@@ -39,12 +39,34 @@ type AlienTime = {
   seconds: number;
 };
 
-function earthTimeToAlienTime(): AlienTime {
-  // UTC+8 timezone '1970-01-01T08:00:00'
-  const earthTime = Math.floor(new Date().getTime() / 500);
-  const alienTime = earthTime + alienBaseTotalSeconds;
-  const year = Math.floor(alienTime / alienYearTotalSeconds);
-  let day = Math.floor((alienTime % alienYearTotalSeconds) / alientDayTotalSeconds);
+function getAlienSecondNumByTime(alienTime: AlienTime) {
+  const alienSeconds =
+    (alienTime.year - alienEpochYear) * alienYearTotalSeconds +
+    daysInAlienMonths.slice(0, alienTime.month - 1).reduce((acc, cur) => acc + cur, 0) *
+      alientDayTotalSeconds +
+    alienTime.day * alientDayTotalSeconds +
+    alienTime.hours * alientHourTotalSeconds +
+    alienTime.minutes * alienBaseSecond +
+    alienTime.seconds;
+  return alienSeconds;
+}
+
+function getEarthSecondNumByTime(alienTime: AlienTime) {
+  const alienSeconds =
+    (alienTime.year - alienEpochYear) * alienYearTotalSeconds +
+    daysInAlienMonths.slice(0, alienTime.month - 1).reduce((acc, cur) => acc + cur, 0) *
+      alientDayTotalSeconds +
+    alienTime.day * alientDayTotalSeconds +
+    alienTime.hours * alientHourTotalSeconds +
+    alienTime.minutes * alienBaseSecond +
+    alienTime.seconds -
+    alienBaseTotalSeconds;
+  return alienSeconds;
+}
+
+function getAlienTimeBySecondNum(secondNum: number) {
+  const year = Math.floor(secondNum / alienYearTotalSeconds);
+  let day = Math.floor((secondNum % alienYearTotalSeconds) / alientDayTotalSeconds);
   let month = 1;
   for (let i = 0; i < daysInAlienMonths.length; i++) {
     if (day - daysInAlienMonths[i] > 0) {
@@ -55,14 +77,14 @@ function earthTimeToAlienTime(): AlienTime {
     }
   }
   const hour = Math.floor(
-    ((alienTime % alienYearTotalSeconds) % alientDayTotalSeconds) / alientHourTotalSeconds,
+    ((secondNum % alienYearTotalSeconds) % alientDayTotalSeconds) / alientHourTotalSeconds,
   );
   const minute = Math.floor(
-    (((alienTime % alienYearTotalSeconds) % alientDayTotalSeconds) % alientHourTotalSeconds) /
+    (((secondNum % alienYearTotalSeconds) % alientDayTotalSeconds) % alientHourTotalSeconds) /
       alienBaseMinute,
   );
   const second =
-    (((alienTime % alienYearTotalSeconds) % alientDayTotalSeconds) % alientHourTotalSeconds) %
+    (((secondNum % alienYearTotalSeconds) % alientDayTotalSeconds) % alientHourTotalSeconds) %
     alienBaseMinute;
 
   return {
@@ -75,16 +97,17 @@ function earthTimeToAlienTime(): AlienTime {
   };
 }
 
+function earthTimeToAlienTime(): AlienTime {
+  // UTC+8 timezone '1970-01-01T08:00:00'
+  const earthTime = Math.floor(new Date().getTime() / 500);
+  const secondNum = earthTime + alienBaseTotalSeconds;
+  const alienTime = getAlienTimeBySecondNum(secondNum);
+  return alienTime;
+}
+
 function alienTimeToEarthTime(alienTime: AlienTime) {
-  const alienSeconds =
-    (alienTime.year - alienEpochYear) * alienYearTotalSeconds +
-    daysInAlienMonths.slice(0, alienTime.month - 1).reduce((acc, cur) => acc + cur, 0) *
-      alientDayTotalSeconds +
-    alienTime.day * alientDayTotalSeconds +
-    alienTime.hours * alientHourTotalSeconds +
-    alienTime.minutes * alienBaseSecond +
-    alienTime.seconds;
-  const earthTimeMilliseconds = (alienSeconds - alienBaseTotalSeconds) * 500;
+  const earthDoubleSeconds = getEarthSecondNumByTime(alienTime);
+  const earthTimeMilliseconds = earthDoubleSeconds * 500;
 
   const earthTime = new Date(earthTimeMilliseconds);
   // Adjust to UTC+8 timezone
@@ -101,4 +124,11 @@ function formatAlienDate({ year, month, day, hours, minutes, seconds }: AlienTim
   };
 }
 
-export { alienTimeToEarthTime, earthTimeToAlienTime, formatAlienDate };
+export {
+  alienTimeToEarthTime,
+  earthTimeToAlienTime,
+  formatAlienDate,
+  getAlienTimeBySecondNum,
+  getEarthSecondNumByTime,
+  getAlienSecondNumByTime,
+};
