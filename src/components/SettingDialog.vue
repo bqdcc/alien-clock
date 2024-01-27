@@ -1,6 +1,16 @@
 <script setup lang="ts">
+import {
+  alienBaseHour,
+  alienBaseMinute,
+  alienBaseMouth,
+  alienBaseSecond,
+  alienEpochYear,
+  daysInAlienMonths,
+} from '@/utils/time';
 import Button from './Button.vue';
 import { defineProps, defineEmits, onMounted, onUnmounted, ref, type Ref } from 'vue';
+import { z } from 'zod';
+import { formatZodError } from '@/utils';
 
 const props = defineProps({
   show: {
@@ -44,22 +54,53 @@ const initNewAlienTime = {
   seconds: null,
 };
 
-type newAlienTimeKey = keyof typeof initNewAlienTime;
-
 const newAlienTime: Ref<typeof initNewAlienTime> = ref({ ...initNewAlienTime });
 const errorMessage = ref('');
+
+const newAlienTimeScheam = z.object({
+  year: z
+    .number()
+    .gte(alienEpochYear, `year minimum is ${alienEpochYear}`)
+    .lte(99999, 'year maximum is 99999')
+    .default(2804),
+  month: z
+    .number()
+    .gte(1, 'month minimum is 1')
+    .lte(alienBaseMouth, `month maximum is ${alienBaseMouth}`)
+    .default(18),
+  day: z
+    .number()
+    .gte(1, 'date minimum is 1')
+    .lte(
+      daysInAlienMonths[newAlienTime.value.month || 1],
+      `date maximum is ${daysInAlienMonths[newAlienTime.value.month || 1]}`,
+    )
+    .default(31),
+  hours: z
+    .number()
+    .gte(0, 'hour minimum is 0')
+    .lte(alienBaseHour, `hour maximum is ${alienBaseHour}`)
+    .default(0),
+  minutes: z
+    .number()
+    .gte(0, 'minute minimum is 0')
+    .lte(alienBaseMinute, `minute maximum is ${alienBaseMinute}`)
+    .default(0),
+  seconds: z
+    .number()
+    .gte(0, 'second minimum is 0')
+    .lte(alienBaseSecond, `second maximum is ${alienBaseSecond}`)
+    .default(0),
+});
+
 function handleSet() {
-  const isValidate = Object.keys(newAlienTime.value).every((key) => {
-    if (newAlienTime.value[key as newAlienTimeKey]) {
-      return true;
-    } else {
-      errorMessage.value = `Please check ${key}`;
-      return false;
-    }
-  });
-  if (isValidate) {
-    props.setAlienTime(false, newAlienTime.value);
+  try {
+    const result = newAlienTimeScheam.parse(newAlienTime.value);
+    props.setAlienTime(false, result);
     handleClose();
+  } catch (error: any) {
+    const errorText = formatZodError(error);
+    errorMessage.value = errorText || '';
   }
 }
 function handleNow() {

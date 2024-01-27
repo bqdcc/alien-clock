@@ -1,14 +1,14 @@
 import { padTo2Digits } from '.';
 
-const daysInAlienMonths = [44, 42, 48, 40, 48, 44, 40, 44, 42, 40, 40, 42, 44, 48, 42, 40, 44, 38];
-const alienBaseSecond = 90;
-const alienBaseMinute = 90;
-const alienBaseHour = 36;
-const alienBaseMouth = 18;
+export const daysInAlienMonths = [44, 42, 48, 40, 48, 44, 40, 44, 42, 40, 40, 42, 44, 48, 42, 40, 44, 38];
+export const alienBaseSecond = 90;
+export const alienBaseMinute = 90;
+export const alienBaseHour = 36;
+export const alienBaseMouth = 18;
 const alienTotalDays = daysInAlienMonths.reduce(function (acr, cur) {
   return acr + cur;
 }, 0);
-const alienEpochYear = 2804;
+export const alienEpochYear = 2804;
 const alienEpochSecond = 88;
 const alienEpochMinute = 2;
 const alientEpochHour = 2;
