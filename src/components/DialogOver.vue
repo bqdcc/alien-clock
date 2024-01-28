@@ -32,7 +32,7 @@ onUnmounted(() => {
 <template>
   <div
     v-show="props.show"
-    class="fixed left-[50%] top-[20%] z-50 flex h-[300px] w-[600px] translate-x-[-50%] flex-col items-center justify-center rounded-md bg-white text-[1.25rem]"
+    class="fixed left-[50%] top-[10%] z-50 flex h-[300px] w-[600px] translate-x-[-50%] flex-col items-center justify-center rounded-md bg-white text-[1.25rem]"
   >
     <div @click="props.handleClose" class="absolute right-6 top-2 cursor-pointer select-none">
       X
