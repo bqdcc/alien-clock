@@ -14,6 +14,7 @@ import AlarmIcon from './assets/AlarmIcon.vue';
 import SettingIcon from './assets/SettingIcon.vue';
 import SettingDialog from './components/SettingDialog.vue';
 import { clearInterval, setInterval } from 'worker-timers';
+import AlarmDialog from './components/AlarmDialog.vue';
 
 const hoursPointerRotate = ref();
 const minutesPointerRotate = ref();
@@ -62,7 +63,6 @@ const settingDialogShow = ref(false);
 function openSettingDialogShow() {
   settingDialogShow.value = true;
 }
-
 function setAlienTime(newIsNow: boolean, newTime?: AlienTime) {
   clearInterval(timer);
   if (!newIsNow) {
@@ -71,13 +71,19 @@ function setAlienTime(newIsNow: boolean, newTime?: AlienTime) {
   isNow = newIsNow;
   timerFunc();
 }
+
+const alarmDialogShow = ref(false)
+function openAlarmDialogShow(){
+  alarmDialogShow.value =true;
+}
+
 </script>
 
 <template>
   <main class="m-auto flex h-full w-[640px] flex-col bg-cover text-4xl">
     <div class="flex flex-1 flex-col items-center justify-center">
       <div class="mb-4 flex gap-8">
-        <button>
+        <button @click="openAlarmDialogShow">
           <AlarmIcon
             class="h-10 w-10 rounded-full transition-shadow hover:shadow-md hover:shadow-redC"
           />
@@ -105,10 +111,11 @@ function setAlienTime(newIsNow: boolean, newTime?: AlienTime) {
       </div>
     </div>
 
-    <div class="rounded-se-md rounded-ss-md bg-slate-500 p-1">
+    <div class="rounded-se-md rounded-ss-md bg-containerC p-1">
       Earth Time: {{ formatEarthDate(earthTime) }}
     </div>
 
     <SettingDialog v-model:show="settingDialogShow" :setAlienTime="setAlienTime" />
+    <AlarmDialog v-model:show="alarmDialogShow" />
   </main>
 </template>

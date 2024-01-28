@@ -11,6 +11,7 @@ import Button from './Button.vue';
 import { defineProps, defineEmits, onMounted, onUnmounted, ref, type Ref } from 'vue';
 import { z } from 'zod';
 import { formatZodError } from '@/utils';
+import DialogOver from './DialogOver.vue';
 
 const props = defineProps({
   show: {
@@ -28,22 +29,6 @@ function handleClose() {
   errorMessage.value = '';
   emites('update:show', false);
 }
-
-function handleEsc(event: KeyboardEvent) {
-  if (event.key === 'Escape' && props.show) {
-    handleClose();
-    return;
-  }
-  return;
-}
-
-onMounted(() => {
-  document.addEventListener('keydown', handleEsc);
-});
-
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleEsc);
-});
 
 const initNewAlienTime = {
   year: null,
@@ -110,11 +95,7 @@ function handleNow() {
 </script>
 
 <template>
-  <div
-    v-show="props.show"
-    class="fixed left-[50%] top-[20%] z-50 flex h-[300px] w-[600px] translate-x-[-50%] flex-col items-center justify-center rounded-md bg-white text-[1.25rem]"
-  >
-    <div @click="handleClose" class="absolute right-6 top-2 cursor-pointer select-none">X</div>
+  <DialogOver :show="props.show" :handle-close="handleClose">
     <div class="flex items-center justify-center gap-2">
       <div class="flex w-[80px] flex-col">
         <h2>Year</h2>
@@ -178,5 +159,5 @@ function handleNow() {
       <Button @click="handleNow">Now</Button>
       <Button @click="handleSet">Set</Button>
     </div>
-  </div>
+  </DialogOver>
 </template>
