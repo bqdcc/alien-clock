@@ -72,11 +72,12 @@ function setAlienTime(newIsNow: boolean, newTime?: AlienTime) {
   timerFunc();
 }
 
-const alarmDialogShow = ref(false)
-function openAlarmDialogShow(){
-  alarmDialogShow.value =true;
+const alarmDialogShow = ref(false);
+function openAlarmDialogShow() {
+  alarmDialogShow.value = true;
 }
 
+const haveAlarm = ref(false);
 </script>
 
 <template>
@@ -86,6 +87,7 @@ function openAlarmDialogShow(){
         <button @click="openAlarmDialogShow">
           <AlarmIcon
             class="h-10 w-10 rounded-full transition-shadow hover:shadow-md hover:shadow-redC"
+            :haveAlarm="haveAlarm"
           />
         </button>
         <button @click="openSettingDialogShow">
@@ -116,6 +118,6 @@ function openAlarmDialogShow(){
     </div>
 
     <SettingDialog v-model:show="settingDialogShow" :setAlienTime="setAlienTime" />
-    <AlarmDialog v-model:show="alarmDialogShow" />
+    <AlarmDialog v-model:show="alarmDialogShow" v-model:hava-alarm="haveAlarm" :currentAlienTime="alienTime" />
   </main>
 </template>

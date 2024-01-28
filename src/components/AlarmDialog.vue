@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import DialogOver from './DialogOver.vue';
 import { formatZodError, padTo2Digits } from '@/utils';
 import AddIcon from '@/assets/AddIcon.vue';
@@ -7,13 +7,23 @@ import { z } from 'zod';
 import { alienBaseHour, alienBaseMinute } from '@/utils/time';
 import { useToast } from 'vue-toastification';
 
+const ringtone = new Audio('/clock/alarm_special.mp3');
+ringtone.loop = true;
+
 const props = defineProps({
   show: {
     type: Boolean,
     default: false,
   },
+  haveAlarm: {
+    type: Boolean,
+    default: false,
+  },
+  currentAlienTime: {
+    type: Object,
+  },
 });
-const emites = defineEmits(['update:show']);
+const emites = defineEmits(['update:show', 'update:havaAlarm']);
 
 function handleClose() {
   emites('update:show', false);
@@ -71,7 +81,6 @@ function addAlarm() {
     const result = newAlarmScheam.parse(newAlarm.value);
     toggleAddShow();
     alarms.value = [...alarms.value, { ...result }];
-    localStorage.setItem('alarms', JSON.stringify(alarms.value));
   } catch (error: any) {
     const errorText = formatZodError(error);
     errorMessage.value = errorText || '';
@@ -81,17 +90,58 @@ function addAlarm() {
 watch(
   () => props.show,
   (newShow) => {
-    if (newShow) {
-      try {
-        const localAlarmsJson = localStorage.getItem('alarms');
-        if (localAlarmsJson) {
-          const localAlarms = JSON.parse(localAlarmsJson);
-          alarms.value = [...localAlarms];
-        } else {
-          alarms.value = [];
+    if (!newShow) {
+      errorMessage.value = '';
+      addShow.value = false;
+    }
+  },
+);
+
+watch(alarms, (newAlarms) => {
+  if (newAlarms) {
+    localStorage.setItem('alarms', JSON.stringify(alarms.value));
+    emites('update:havaAlarm', !!newAlarms.length);
+  }
+});
+
+onMounted(() => {
+  try {
+    const localAlarmsJson = localStorage.getItem('alarms');
+    if (localAlarmsJson) {
+      const localAlarms = JSON.parse(localAlarmsJson);
+      alarms.value = [...localAlarms];
+    } else {
+      alarms.value = [];
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+// ringtong play once
+watch(
+  () => props.currentAlienTime,
+  (alienTime) => {
+    if (alarms.value.length > 0 && !!alienTime) {
+      const needAlarm = alarms.value.find((alarm, index) => {
+        const isEq = alarm.hour === alienTime.hours && alarm.minute === alienTime.minutes;
+        if (isEq) {
+          alarms.value = alarms.value.filter((_, i) => index !== i);
+          return true;
         }
-      } catch (error) {
-        console.error(error);
+        return false;
+      });
+      if (needAlarm) {
+        toast.warning('The alarm goes off.', {
+          timeout: 60000, // alarm 1 minute
+          closeOnClick: false,
+          pauseOnHover: false,
+          onClose: () => {
+            ringtone.currentTime = 0;
+            ringtone.pause();
+          },
+        });
+        ringtone.play();
       }
     }
   },
@@ -99,7 +149,7 @@ watch(
 </script>
 
 <template>
-  <DialogOver :show="props.show" :handle-close="handleClose">
+  <DialogOver class="top-[10%]" :show="props.show" :handle-close="handleClose">
     <div class="flex w-[600px] flex-col px-10">
       <div v-if="!alarms.length" class="text-center text-[2.25rem] font-medium">No alarms</div>
 
